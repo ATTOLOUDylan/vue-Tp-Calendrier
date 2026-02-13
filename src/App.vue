@@ -49,16 +49,7 @@ const isLoggedOut = () => {
   </div>
 </template>
 
-<style>
-/* Reset global */
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background-color: #fafafa;
-  color: #111111;
-  -webkit-font-smoothing: antialiased;
-}
-</style>
+
 
 <style scoped>
 /* Navigation */
