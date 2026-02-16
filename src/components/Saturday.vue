@@ -1,20 +1,34 @@
 <script setup>
 import TaskList from './TaskList.vue'
-import { ref, onMounted } from 'vue'
+import { ref, defineProps, defineEmits } from 'vue'
 
-const items = ref([])
+/* =============================
+   PROPS
+   Le parent envoie uniquement
+   les tâches du samedi
+============================= */
+const props = defineProps({
+  tasks: Array
+})
+
+/* =============================
+   EMITS
+============================= */
+const emit = defineEmits([
+  'selectDay',
+  'dropTask',
+  'deleteTask',
+  'editTask'
+])
+
+/* =============================
+   ÉDITION
+============================= */
 const editingTask = ref(null)
 const editedText = ref('')
 
-onMounted(() => {
-  const savedItems = localStorage.getItem("items")
-  items.value = savedItems ? JSON.parse(savedItems) : []
-})
-
-
 function deleteTask(id) {
-  items.value = items.value.filter(item => item.id !== id)
-  save()
+  emit('deleteTask', id)
 }
 
 function editTask(task) {
@@ -23,45 +37,61 @@ function editTask(task) {
 }
 
 function saveEdit() {
-  const task = items.value.find(t => t.id === editingTask.value)
-  if (task) task.tache = editedText.value
-
+  emit('editTask', {
+    id: editingTask.value,
+    tache: editedText.value
+  })
   editingTask.value = null
   editedText.value = ''
-  save()
 }
 
-function save() {
-  localStorage.setItem("items", JSON.stringify(items.value))
+/* =============================
+   DRAG & DROP
+============================= */
+function onDragStart(event, taskId) {
+  event.dataTransfer.setData('taskId', taskId)
 }
 
+function onDrop(event) {
+  const taskId = Number(event.dataTransfer.getData('taskId'))
+  emit('dropTask', taskId, 'Saturday')
+}
 
-const emit = defineEmits(['selectDay'])
-
+/* =============================
+   SÉLECTION DU JOUR
+============================= */
 function select() {
   emit('selectDay', 'Saturday')
 }
-
 </script>
 
 <template>
   <li
     class="day-column p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer"
     @click="select"
+    @dragover.prevent
+    @drop="onDrop"
   >
     <!-- Titre du jour -->
     <h3 class="day-title text-2xl font-bold text-gray-800 mb-4">
       Saturday
     </h3>
 
-    <!-- Liste des tâches -->
-    <TaskList
-      :items="items"
-      jour="Saturday"
-      @deleteTask="deleteTask"
-      @editTask="editTask"
-      class="space-y-2 mb-4"
-    />
+    <!-- Tâches draggable -->
+    <div
+      v-for="task in tasks"
+      :key="task.id"
+      draggable="true"
+      @dragstart="onDragStart($event, task.id)"
+    >
+      <TaskList
+        :items="[task]"
+        jour="Saturday"
+        @deleteTask="deleteTask"
+        @editTask="editTask"
+        class="space-y-2 mb-2"
+      />
+    </div>
 
     <!-- Zone édition -->
     <div v-if="editingTask" class="flex flex-col sm:flex-row gap-2 mt-3">
@@ -79,4 +109,3 @@ function select() {
     </div>
   </li>
 </template>
-
