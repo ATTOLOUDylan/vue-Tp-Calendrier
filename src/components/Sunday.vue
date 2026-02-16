@@ -11,6 +11,7 @@ onMounted(() => {
   items.value = savedItems ? JSON.parse(savedItems) : []
 })
 
+
 function deleteTask(id) {
   items.value = items.value.filter(item => item.id !== id)
   save()
