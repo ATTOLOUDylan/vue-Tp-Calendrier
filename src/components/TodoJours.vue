@@ -166,7 +166,7 @@ function performDelete() {
 
         <Tuesday
           :tasks="tasks.filter(t => t.jour === 'Tuesday')"
-          @deleteTask="deleteTask"
+          @requestDelete="confirmDelete"
           @editTask="editTask"
           @selectDay="day"
           @dropTask="moveTask"
@@ -175,7 +175,7 @@ function performDelete() {
 
         <Wednesday
           :tasks="tasks.filter(t => t.jour === 'Wednesday')"
-          @deleteTask="deleteTask"
+          @requestDelete="confirmDelete"
           @editTask="editTask"
           @selectDay="day"
           @dropTask="moveTask"
@@ -184,7 +184,7 @@ function performDelete() {
 
         <Thursday
           :tasks="tasks.filter(t => t.jour === 'Thursday')"
-          @deleteTask="deleteTask"
+          @requestDelete="confirmDelete"
           @editTask="editTask"
           @selectDay="day"
           @dropTask="moveTask"
@@ -193,7 +193,7 @@ function performDelete() {
 
         <Friday
           :tasks="tasks.filter(t => t.jour === 'Friday')"
-          @deleteTask="deleteTask"
+         @requestDelete="confirmDelete"
           @editTask="editTask"
           @selectDay="day"
           @dropTask="moveTask"
@@ -202,7 +202,7 @@ function performDelete() {
 
         <Saturday
           :tasks="tasks.filter(t => t.jour === 'Saturday')"
-          @deleteTask="deleteTask"
+          @requestDelete="confirmDelete"
           @editTask="editTask"
           @selectDay="day"
           @dropTask="moveTask"
@@ -211,7 +211,7 @@ function performDelete() {
 
         <Sunday
           :tasks="tasks.filter(t => t.jour === 'Sunday')"
-          @deleteTask="deleteTask"
+         @requestDelete="confirmDelete"
           @editTask="editTask"
           @selectDay="day"
           @dropTask="moveTask"
