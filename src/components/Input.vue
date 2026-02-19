@@ -1,50 +1,74 @@
+<!-- Input.vue -->
 <script setup>
 import { ref, onMounted } from 'vue'
- 
-const items = ref([])
+
+
 const newItem = ref("")
+let i=1
 const props = defineProps({
-    types: String
+  types: String
 })
 
-onMounted(() => {
-  if (!localStorage.getItem("items")) {
-    localStorage.setItem("items", JSON.stringify([]))
-  }
-  items.value = JSON.parse(localStorage.getItem("items"))
-})
+// On définit l'emit
+const emit = defineEmits(['added'])
+
+
 
 function addItem() {
-  if (!newItem.value) return
-  if (!props.types) return 
+  if (!newItem.value || !props.types) return
 
-  items.value.push({id: Date.now(), jour: props.types, tache: newItem.value})
+  emit('added', {
+    id: Date.now(),
+    jour: props.types,
+    tache: newItem.value
+  })
+
   newItem.value = ""
-
-  localStorage.setItem("items", JSON.stringify(items.value))
 }
+
 </script>
 
 <template>
-  <div class="p-4 bg-white rounded-lg shadow-md max-w-md mx-auto mt-4">
-    <form @submit.prevent="addItem" class="flex flex-col gap-3">
-      <h2 class="text-xl font-bold text-gray-800">Ajouter une tâche</h2>
-      <h3 class="text-gray-600">{{ types }}</h3>
+  <div class="w-full px-6 mt-10 flex justify-center">
+    <!-- Conteneur avec largeur maximale -->
+    <div class="flex justify-between items-center gap-16 w-full max-w-6xl">
 
-      <input 
-        type="text" 
-        v-model="newItem" 
-        placeholder="Nouvelle tâche..." 
-        required
-        class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-      />
+      <!-- IMAGE -->
+      <div class="flex-shrink-0">
+        <img 
+          src="@/assets/calendar.png" 
+          alt="Calendrier de projet"
+          class="w-96 h-auto rounded-xl shadow-xl grayscale"
+        />
+      </div>
 
-      <button 
-        type="submit"
-        class="px-5 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-      >
-        Ajouter
-      </button>
-    </form>
+      <!-- FORMULAIRE -->
+      <div class="flex-shrink-0 w-96 p-8 bg-white rounded-xl shadow-lg border border-gray-200">
+        <form @submit.prevent="addItem" class="flex flex-col gap-5">
+          
+          <h2 class="text-2xl font-semibold text-black">Ajouter une tâche</h2>
+          <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">{{ types }}</h3>
+
+          <input 
+            type="text" 
+            v-model="newItem" 
+            placeholder="Nouvelle tâche..."
+            required
+            class="p-4 bg-white border border-gray-300 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition"
+          />
+
+          <button 
+            type="submit"
+            class="px-6 py-4 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition"
+          >
+            Ajouter
+          </button>
+
+        </form>
+      </div>
+
+    </div>
   </div>
 </template>
+
+
