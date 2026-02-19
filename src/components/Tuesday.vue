@@ -18,7 +18,9 @@ const emit = defineEmits([
   'selectDay',
   'dropTask',
   'deleteTask',
-  'editTask'
+  'editTask',
+  'requestDelete' 
+
 ])
 
 /* =============================
