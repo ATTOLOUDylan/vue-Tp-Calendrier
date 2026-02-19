@@ -40,7 +40,7 @@ const isLoggedOut = () => {
     style="background-image: url('/src/assets/CalendrierBG2.png');"
   >
     <!-- Overlay sombre -->
-    <div class="absolute inset-0 bg-black/70 z-0"></div>
+    <div class="absolute inset-0 bg-black/50 z-0"></div>
 
     <div class="relative z-10 flex flex-col min-h-screen">
       

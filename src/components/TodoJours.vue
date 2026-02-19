@@ -1,121 +1,132 @@
 <!-- Todojours.vue -->
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from "vue";
 
-import Monday from './Monday.vue'
-import Tuesday from './Tuesday.vue'
-import Wednesday from './Wednesday.vue'
-import Thursday from './Thursday.vue'
-import Friday from './Friday.vue'
-import Saturday from './Saturday.vue'
-import Sunday from './Sunday.vue'
+import Monday from "./Monday.vue";
+import Tuesday from "./Tuesday.vue";
+import Wednesday from "./Wednesday.vue";
+import Thursday from "./Thursday.vue";
+import Friday from "./Friday.vue";
+import Saturday from "./Saturday.vue";
+import Sunday from "./Sunday.vue";
 
 /* =============================
    STATE CENTRAL
 ============================= */
-const tasks = ref([])
+const tasks = ref([]);
 
 onMounted(() => {
-  const saved = localStorage.getItem('items')
-  tasks.value = saved ? JSON.parse(saved) : []
-  updateButtons()
-})
+  const saved = localStorage.getItem("items");
+  tasks.value = saved ? JSON.parse(saved) : [];
+  updateButtons();
+});
 
 /* =============================
    SAUVEGARDE
 ============================= */
 function save() {
-  localStorage.setItem('items', JSON.stringify(tasks.value))
+  localStorage.setItem("items", JSON.stringify(tasks.value));
 }
 
 /* =============================
    CRUD
 ============================= */
 function deleteTask(id) {
-  tasks.value = tasks.value.filter(t => t.id !== id)
-  save()
+  tasks.value = tasks.value.filter((t) => t.id !== id);
+  save();
 }
 
 function editTask(payload) {
-  const task = tasks.value.find(t => t.id === payload.id)
+  const task = tasks.value.find((t) => t.id === payload.id);
   if (task) {
-    task.tache = payload.tache
-    save()
+    task.tache = payload.tache;
+    save();
   }
 }
 
 function moveTask(taskId, newJour) {
-  const task = tasks.value.find(t => t.id === taskId)
+  const task = tasks.value.find((t) => t.id === taskId);
   if (task) {
-    task.jour = newJour
-    save()
+    task.jour = newJour;
+    save();
   }
 }
 
 /* =============================
    JOUR
 ============================= */
-const emit = defineEmits(['NameDay'])
+const emit = defineEmits(["NameDay"]);
 function day(jour) {
-  emit('NameDay', jour)
+  emit("NameDay", jour);
 }
 
 const props = defineProps({
-  element: Object
-})
+  element: Object,
+});
 
 watch(
   () => props.element,
   (task) => {
-    if (!task) return
-    tasks.value.push(task)
-    save()
-  }
-)
+    if (!task) return;
+    tasks.value.push(task);
+    save();
+    triggerNotify("Nouvelle tâche ajoutée !"); // Notif d'ajout
+  },
+);
 
 /* =============================
    SCROLL + BOUTONS
 ============================= */
-const calendar = ref(null)
-const isAtStart = ref(true)
-const isAtEnd = ref(false)
+const calendar = ref(null);
+const isAtStart = ref(true);
+const isAtEnd = ref(false);
 
 function updateButtons() {
-  const el = calendar.value
-  if (!el) return
-  isAtStart.value = el.scrollLeft <= 0
-  isAtEnd.value =
-    el.scrollLeft + el.clientWidth >= el.scrollWidth - 5
+  const el = calendar.value;
+  if (!el) return;
+  isAtStart.value = el.scrollLeft <= 0;
+  isAtEnd.value = el.scrollLeft + el.clientWidth >= el.scrollWidth - 5;
 }
 
 function scrollLeft() {
-  calendar.value.scrollBy({ left: -320, behavior: 'smooth' })
-  setTimeout(updateButtons, 350)
+  calendar.value.scrollBy({ left: -320, behavior: "smooth" });
+  setTimeout(updateButtons, 350);
 }
 
 function scrollRight() {
-  calendar.value.scrollBy({ left: 320, behavior: 'smooth' })
-  setTimeout(updateButtons, 350)
+  calendar.value.scrollBy({ left: 320, behavior: "smooth" });
+  setTimeout(updateButtons, 350);
+}
+
+// NOTIFICATION//
+const notification = ref({ show: false, message: "", type: "success" });
+
+function triggerNotify(msg, type = "success") {
+  notification.value = { show: true, message: msg, type };
+  setTimeout(() => {
+    notification.value.show = false;
+  }, 3000);
 }
 
 // MODAL SUPPRESSION
-const showDeleteModal = ref(false)
-const taskToDelete = ref(null)
+const showDeleteModal = ref(false);
+const taskToDelete = ref(null);
 
 function confirmDelete(taskId) {
-  taskToDelete.value = taskId
-  showDeleteModal.value = true
+  taskToDelete.value = taskId;
+  showDeleteModal.value = true;
 }
 
 function cancelDelete() {
-  taskToDelete.value = null
-  showDeleteModal.value = false
+  taskToDelete.value = null;
+  showDeleteModal.value = false;
 }
 
 function performDelete() {
   if (taskToDelete.value !== null) {
-    deleteTask(taskToDelete.value)
-    cancelDelete()
+    deleteTask(taskToDelete.value);
+    triggerNotify("Tâche supprimée avec succès", "error"); // Notif de suppression
+    cancelDelete();
   }
 }
 </script>
@@ -123,29 +134,26 @@ function performDelete() {
 <template>
   <div class="w-full px-4 mt-10 flex justify-center">
     <div class="w-full max-w-7xl relative">
-
       <!-- BOUTON GAUCHE -->
       <button
         @click="scrollLeft"
         :disabled="isAtStart"
-        class="
-          hidden md:flex
-          absolute left-2 top-1/2 -translate-y-1/2
-          w-12 h-12 items-center justify-center
-          rounded-full
-          bg-black/70 backdrop-blur
-          text-white text-2xl font-bold
-          shadow-xl
-          hover:bg-black
-          active:scale-95
-          transition-all
-          disabled:opacity-30 disabled:cursor-not-allowed
-          z-10
-        "
+        class="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 items-center justify-center rounded-full bg-black/70 backdrop-blur text-white text-2xl font-bold shadow-xl hover:bg-black active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed z-10"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-</svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2.5"
+          stroke="currentColor"
+          class="w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15.75 19.5L8.25 12l7.5-7.5"
+          />
+        </svg>
       </button>
 
       <!-- LISTE DES JOURS -->
@@ -155,9 +163,8 @@ function performDelete() {
         class="flex gap-4 overflow-x-hidden pb-4"
       >
         <Monday
-          :tasks="tasks.filter(t => t.jour === 'Monday')"
+          :tasks="tasks.filter((t) => t.jour === 'Monday')"
           @requestDelete="confirmDelete"
-          
           @editTask="editTask"
           @selectDay="day"
           @dropTask="moveTask"
@@ -165,7 +172,7 @@ function performDelete() {
         />
 
         <Tuesday
-          :tasks="tasks.filter(t => t.jour === 'Tuesday')"
+          :tasks="tasks.filter((t) => t.jour === 'Tuesday')"
           @requestDelete="confirmDelete"
           @editTask="editTask"
           @selectDay="day"
@@ -174,7 +181,7 @@ function performDelete() {
         />
 
         <Wednesday
-          :tasks="tasks.filter(t => t.jour === 'Wednesday')"
+          :tasks="tasks.filter((t) => t.jour === 'Wednesday')"
           @requestDelete="confirmDelete"
           @editTask="editTask"
           @selectDay="day"
@@ -183,7 +190,7 @@ function performDelete() {
         />
 
         <Thursday
-          :tasks="tasks.filter(t => t.jour === 'Thursday')"
+          :tasks="tasks.filter((t) => t.jour === 'Thursday')"
           @requestDelete="confirmDelete"
           @editTask="editTask"
           @selectDay="day"
@@ -192,8 +199,8 @@ function performDelete() {
         />
 
         <Friday
-          :tasks="tasks.filter(t => t.jour === 'Friday')"
-         @requestDelete="confirmDelete"
+          :tasks="tasks.filter((t) => t.jour === 'Friday')"
+          @requestDelete="confirmDelete"
           @editTask="editTask"
           @selectDay="day"
           @dropTask="moveTask"
@@ -201,7 +208,7 @@ function performDelete() {
         />
 
         <Saturday
-          :tasks="tasks.filter(t => t.jour === 'Saturday')"
+          :tasks="tasks.filter((t) => t.jour === 'Saturday')"
           @requestDelete="confirmDelete"
           @editTask="editTask"
           @selectDay="day"
@@ -210,8 +217,8 @@ function performDelete() {
         />
 
         <Sunday
-          :tasks="tasks.filter(t => t.jour === 'Sunday')"
-         @requestDelete="confirmDelete"
+          :tasks="tasks.filter((t) => t.jour === 'Sunday')"
+          @requestDelete="confirmDelete"
           @editTask="editTask"
           @selectDay="day"
           @dropTask="moveTask"
@@ -223,54 +230,70 @@ function performDelete() {
       <button
         @click="scrollRight"
         :disabled="isAtEnd"
-        class="
-          hidden md:flex
-          absolute right-2 top-1/2 -translate-y-1/2
-          w-12 h-12 items-center justify-center
-          rounded-full
-          bg-black/70 backdrop-blur
-          text-white text-2xl font-bold
-          shadow-xl
-          hover:bg-black
-          active:scale-95
-          transition-all
-          disabled:opacity-30 disabled:cursor-not-allowed
-          z-10
-        "
+        class="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 items-center justify-center rounded-full bg-black/70 backdrop-blur text-white text-2xl font-bold shadow-xl hover:bg-black active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed z-10"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-</svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2.5"
+          stroke="currentColor"
+          class="w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M8.25 4.5l7.5 7.5-7.5 7.5"
+          />
+        </svg>
       </button>
-
     </div>
   </div>
   <!-- MODAL SUPPRESSION -->
-<div
-  v-if="showDeleteModal"
-  class="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
->
-  <div class="bg-white rounded-xl p-6 w-80 shadow-xl flex flex-col gap-4">
-    <h3 class="text-lg font-semibold text-gray-800">Confirmer la suppression</h3>
-    <p class="text-gray-600 text-sm">
-      Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est irréversible.
-    </p>
-    
-    <div class="flex justify-end gap-3 mt-4">
-      <button
-        @click="cancelDelete"
-        class="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
-      >
-        Annuler
-      </button>
-      <button
-        @click="performDelete"
-        class="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800 transition"
-      >
-        Supprimer
-      </button>
+  <div
+    v-if="showDeleteModal"
+    class="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+  >
+    <div class="bg-white rounded-xl p-6 w-80 shadow-xl flex flex-col gap-4">
+      <h3 class="text-lg font-semibold text-gray-800">
+        Confirmer la suppression
+      </h3>
+      <p class="text-gray-600 text-sm">
+        Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est
+        irréversible.
+      </p>
+
+      <div class="flex justify-end gap-3 mt-4">
+        <button
+          @click="cancelDelete"
+          class="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
+        >
+          Annuler
+        </button>
+        <button
+          @click="performDelete"
+          class="px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-800 transition"
+        >
+          Supprimer
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
+  <Transition name="fade">
+    <div
+      v-if="notification.show"
+      :class="[
+        'fixed top-20 right-5 px-6 py-3 rounded-lg shadow-2xl text-white z-[100] transition-all',
+        notification.type === 'success' ? 'bg-green-600' : 'bg-red-600',
+      ]"
+    >
+      {{ notification.message }}
+    </div>
+  </Transition>
 </template>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.5s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>

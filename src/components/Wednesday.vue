@@ -27,9 +27,6 @@ const emit = defineEmits([
 const editingTask = ref(null)
 const editedText = ref('')
 
-function deleteTask(id) {
-  emit('deleteTask', id)
-}
 
 function editTask(task) {
   editingTask.value = task.id
