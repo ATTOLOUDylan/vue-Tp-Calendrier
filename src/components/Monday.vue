@@ -1,6 +1,7 @@
+
 <script setup>
 import TaskList from './TaskList.vue'
-import { ref, onMounted, defineProps, defineEmits } from 'vue'
+import { ref, defineProps, defineEmits } from 'vue'
 
 /* =============================
    PROPS : tâches du lundi
@@ -10,12 +11,12 @@ const props = defineProps({
 })
 
 /* =============================
-   EMITS
+   EMITS : ajouter tous les events utilisés
 ============================= */
-const emit = defineEmits(['selectDay', 'dropTask'])
+const emit = defineEmits(['selectDay', 'dropTask', 'deleteTask', 'editTask'])
 
 /* =============================
-   ÉDITION (ton code inchangé)
+   ÉDITION
 ============================= */
 const editingTask = ref(null)
 const editedText = ref('')
@@ -42,16 +43,11 @@ function saveEdit() {
    DRAG & DROP
 ============================= */
 function onDragStart(event, taskId) {
-  // On stocke uniquement l'id (jamais l'objet complet)
   event.dataTransfer.setData('taskId', taskId)
 }
 
 function onDrop(event) {
-  // Récupération de l'id
   const taskId = Number(event.dataTransfer.getData('taskId'))
-
-  // On informe le parent que la tâche
-  // doit passer au jour "Monday"
   emit('dropTask', taskId, 'Monday')
 }
 
@@ -61,13 +57,17 @@ function onDrop(event) {
 function select() {
   emit('selectDay', 'Monday')
 }
+function handleDelete(id) {
+ 
+  
+  emit('requestDelete', id)
+}
 </script>
 
 <template>
   <li
     class="day-column p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer"
     @click="select"
-
     @dragover.prevent
     @drop="onDrop"
   >
@@ -85,25 +85,64 @@ function select() {
       <TaskList
         :items="[task]"
         jour="Monday"
-        @deleteTask="deleteTask"
+        @requestDelete="handleDelete"
         @editTask="editTask"
         class="space-y-2 mb-2"
       />
     </div>
 
     <!-- ÉDITION -->
-    <div v-if="editingTask" class="flex flex-col sm:flex-row gap-2 mt-3">
-      <input
-        v-model="editedText"
-        class="flex-1 p-3 border border-gray-300 rounded-lg"
-        placeholder="Modifier la tâche..."
-      />
-      <button
-        @click="saveEdit"
-        class="px-5 py-3 bg-green-500 text-white rounded-lg"
-      >
-        Enregistrer
-      </button>
-    </div>
+<div
+  v-if="editingTask"
+  class="
+    mt-4
+    flex flex-col sm:flex-row gap-3
+    p-4
+    rounded-xl
+    bg-gray-50
+    border border-gray-200
+    shadow-sm
+    animate-fade-in
+  "
+>
+  <!-- INPUT -->
+  <input
+    v-model="editedText"
+    placeholder="Modifier la tâche…"
+    class="
+      flex-1
+      px-4 py-3
+      text-sm
+      text-gray-800
+      bg-white
+      border border-gray-300
+      rounded-lg
+      outline-none
+      transition
+      focus:border-black
+      focus:ring-1 focus:ring-black
+      placeholder-gray-400
+    "
+  />
+
+  <!-- BOUTON -->
+  <button
+    @click="saveEdit"
+    class="
+      px-6 py-3
+      text-sm font-medium
+      text-white
+      bg-black
+      rounded-lg
+      transition
+      hover:bg-gray-800
+      active:scale-95
+      whitespace-nowrap
+    "
+  >
+    Enregistrer
+  </button>
+</div>
+
   </li>
 </template>

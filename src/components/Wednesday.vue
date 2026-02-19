@@ -67,6 +67,11 @@ function onDrop(event) {
 function select() {
   emit('selectDay', 'Wednesday')
 }
+function handleDelete(id) {
+ 
+  
+  emit('requestDelete', id)
+}
 </script>
 
 <template>
@@ -93,25 +98,64 @@ function select() {
       <TaskList
         :items="[task]"
         jour="Wednesday"
-        @deleteTask="deleteTask"
+        @requestDelete="handleDelete"
         @editTask="editTask"
         class="space-y-2 mb-2"
       />
     </div>
 
     <!-- ZONE ÉDITION -->
-    <div v-if="editingTask" class="flex flex-col sm:flex-row gap-2 mt-3">
-      <input
-        v-model="editedText"
-        class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
-        placeholder="Modifier la tâche..."
-      />
-      <button
-        @click="saveEdit"
-        class="px-5 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-      >
-        Enregistrer
-      </button>
-    </div>
+    <div
+  v-if="editingTask"
+  class="
+    mt-4
+    flex flex-col sm:flex-row gap-3
+    p-4
+    rounded-xl
+    bg-gray-50
+    border border-gray-200
+    shadow-sm
+    animate-fade-in
+  "
+>
+  <!-- INPUT -->
+  <input
+    v-model="editedText"
+    placeholder="Modifier la tâche…"
+    class="
+      flex-1
+      px-4 py-3
+      text-sm
+      text-gray-800
+      bg-white
+      border border-gray-300
+      rounded-lg
+      outline-none
+      transition
+      focus:border-black
+      focus:ring-1 focus:ring-black
+      placeholder-gray-400
+    "
+  />
+
+  <!-- BOUTON -->
+  <button
+    @click="saveEdit"
+    class="
+      px-6 py-3
+      text-sm font-medium
+      text-white
+      bg-black
+      rounded-lg
+      transition
+      hover:bg-gray-800
+      active:scale-95
+      whitespace-nowrap
+    "
+  >
+    Enregistrer
+  </button>
+</div>
+
   </li>
 </template>
