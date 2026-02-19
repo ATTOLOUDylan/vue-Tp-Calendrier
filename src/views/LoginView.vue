@@ -27,11 +27,11 @@ function login() {
 <template>
   <div 
     class="min-h-screen flex items-center justify-center p-6 bg-cover bg-center bg-no-repeat relative"
-    style="background-image: url('/src/assets/CalendrierBG.png');"
+    style="background-image: url('/src/assets/images1.png');"
   >
     <div class="absolute inset-0 bg-black/60 z-0"></div>
 
-    <div class="w-full max-w-[400px] bg-white/75 backdrop-blur-lg p-8 md:p-12 rounded-xl shadow-2xl border border-white/30 z-10">
+    <div class="w-full max-w-[400px] bg-white/90 backdrop-blur-lg p-1 md:p-12 rounded-xl shadow-2xl border border-white/30 z-10">
       
       <header class="text-center mb-8">
         <div class="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center mx-auto mb-4">
